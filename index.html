@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    .outer {
+        width: 900px;
+        margin: auto;
+
+    }
+
+    .room {
+        width: 400px;
+        margin: 5px;
+        float: left;
+        height: 300px;
+    }
+
+    .messages {
+        width: 390px;
+        height: 300px;
+        margin-bottom: 30px;
+        background-color: aqua;
+
+    }
+
+    .txt_send {
+        width: 300px;
+
+    }
+</style>
+
+<body>
+    <div class="outer">
+        <div class="room">
+            <h1>User1</h1>
+            <div class="messages" id="nMessages"></div>
+            <form action="">
+                <input type="text" name="" id="nTxt" class="txt-send">
+                <input type="button" value="Send" id="nBtn" class="btn">
+            </form>
+        </div>
+        <div class="room">
+            <h1>User2</h1>
+            <div class="messages" id="pMessages"></div>
+            <form action="">
+                <input type="text" name="" id="pTxt" class="txt-send">
+                <input type="button" value="Send" id="pBtn" class="btn">
+            </form>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+        socket.on("connect", function () {
+            var nRoom = "nRoom";
+            socket.emit('nRoom', nRoom);
+            var pRoom = "pRoom";
+            socket.emit("pRoom", pRoom);
+        });
+
+        //node
+        var nBtn = document.getElementById("nBtn");
+        var nTxt = document.getElementById("nTxt");
+        var nMessage = document.getElementById("nMessages");
+        nBtn.addEventListener("click",function(){
+            socket.emit("node new message",nTxt.value);
+        });
+        socket.on("node news",function(data){
+            nMessage.innerHTML = nMessage.innerHTML + "<br>" + data;
+        });
+
+        socket.on("node new user",function(data){
+            nMessage.innerHTML = nMessage.innerHTML + "<br>" + data;
+        })
+
+        //python
+
+        var pBtn = document.getElementById("pBtn");
+        var pTxt = document.getElementById("pTxt");
+        var pMessage = document.getElementById("pMessages");
+        pBtn.addEventListener("click",function(){
+            socket.emit("python new message",pTxt.value);
+        });
+
+        socket.on("python news",function(data){
+            pMessages.innerHTML = pMessage.innerHTML + "<br>" + data;
+        });
+
+        socket.on("python new user",function(data){
+            pMessage.innerHTML = pMessage.innerHTML + "<br>" + data;
+        });
+
+    </script>
+</body>
+
+</html>
